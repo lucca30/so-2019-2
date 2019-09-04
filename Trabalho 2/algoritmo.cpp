@@ -63,7 +63,7 @@ int get_instante_proxima_chegada(void){
 int get_instante_fim_execucao(void){
     if(AA_tarefa_em_execucao == -1) return INF;
     else{
-        if(algoritmo_atual == FCFS || algoritmo_atual == SJF){
+        if(algoritmo_atual == FCFS || algoritmo_atual == SJF || algoritmo_atual == SRTF){
             return AA_instante_atual + AA_tempo_restante[AA_tarefa_em_execucao];
         }
         if(algoritmo_atual = RR){
@@ -220,13 +220,57 @@ void executa(void){
 
 
     }
+
+    if(algoritmo_atual == SRTF){
+        printf("Instante Atual : %d\n", AA_instante_atual);
+
+        for(int i=0;i<AA_instante_chegada.size();i++){
+            if(AA_instante_chegada[i] == AA_instante_atual){
+                AA_heap.insert(mp(AA_tempo_restante[i],i));
+                printf("Adicionando %d na fila \n", i);
+            }
+
+            // atualizando o tempo de espera de cada tarefa
+            if(AA_tempo_restante[i] > 0 && AA_instante_atual > AA_instante_chegada[i] && i!= AA_tarefa_em_execucao){
+                AA_tempo_espera[i] += variacao_tempo;
+            }
+        }
+
+        if(AA_tarefa_em_execucao != -1){
+            AA_tempo_restante[AA_tarefa_em_execucao] -= variacao_tempo;  
+            printf("Reduzido o tempo da tarefa %d para %d restantes\n", AA_tarefa_em_execucao, AA_tempo_restante[AA_tarefa_em_execucao]);
+
+            // sempre finalizar a tarefa, para que seja feita a verificação se existe alguma tarefa com tempo restante menoE
+            printf("Finalizada a tarefa %d\n", AA_tarefa_em_execucao);
+            AA_tempo_execucao[AA_tarefa_em_execucao] = AA_instante_atual - AA_instante_chegada[AA_tarefa_em_execucao];
+
+            AA_ultima_tarefa_em_execucao = AA_tarefa_em_execucao;
+            if(AA_tempo_restante[AA_tarefa_em_execucao] != 0){ // se a tarefa ainda não terminou de fato
+                AA_heap.insert( mp(AA_tempo_restante[AA_tarefa_em_execucao],AA_tarefa_em_execucao) );
+
+            }
+
+            AA_tarefa_em_execucao = -1;
+        }
+        // não pode ser else, pois AA_tarefa_execução pode ter ser valor atribuído em -1 no bloco acima
+        if(AA_tarefa_em_execucao == -1 && !AA_heap.empty()){
+            AA_tarefa_em_execucao = (*AA_heap.begin()).second;
+            AA_heap.erase(AA_heap.begin());
+            printf("Escolhido a tarefa %d\n", AA_tarefa_em_execucao);
+            // verificar se houve troca de contexto
+            if(AA_ultima_tarefa_em_execucao != -1 && AA_tarefa_em_execucao != AA_ultima_tarefa_em_execucao){
+                AA_troca_contexto ++;
+            }
+        }
+
+
+    }
 }
 
 
 void inicia(void){
     // bloco condicional temporário para pular algoritmos ainda não implementados
     if(
-        algoritmo_atual == SRTF ||
         algoritmo_atual == PRIOc ||
         algoritmo_atual == PRIOp ||
         algoritmo_atual == PRIOd 
@@ -266,7 +310,7 @@ void inicia(void){
     while(tempo_execucao_total != AA_instante_atual){
         executa();
         count++;
-        if(count == 20) break;
+        if(count == 30) break;
     }
     printf("\n\nTempo de execução total: %d\n", tempo_execucao_total);
     printf("AA_instante_atual: %d\n", AA_instante_atual);
