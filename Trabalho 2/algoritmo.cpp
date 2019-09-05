@@ -9,12 +9,10 @@ using namespace std;
 #define PRIOp 6
 #define PRIOd 7
 
-//Pedro Esteve aqui:
 #define Tt 0 //Tempo de execução médio
 #define Tw 1 //Tempo de espera médio
 #define TC 2 //Quantas trocas de contexto
 #define TT 3 //Tempo total
-//Pedro Não está mais aqui
 
 #define RR_TQ 2
 
@@ -39,9 +37,7 @@ int AA_instante_inicio_tarefa_em_execucao;
 queue<int> AA_fila;
 set<pair<int, int> > AA_heap; // estrutura de dados que possui os métodos que precisamos de uma heap
 
-//Pedro Esteve aqui:
 float tabela[7][4];
-//Pedro não esteve mais aqui
 
 void read (void){
     int n;
@@ -432,24 +428,16 @@ void inicia(void){
         tt_mean += AA_tempo_execucao[i];
         printf("%d ", AA_tempo_execucao[i]);
     }
-    set_data_on_table(Tw, tw_mean/AA_tempo_espera.size()); //PEDRO
-    set_data_on_table(Tt, tt_mean/AA_tempo_execucao.size());//PEDRO
-    set_data_on_table(TC, AA_troca_contexto);//PEDRO
-    set_data_on_table(TT, tempo_execucao_total);//PEDRO
+    set_data_on_table(Tw, tw_mean/AA_tempo_espera.size());
+    set_data_on_table(Tt, tt_mean/AA_tempo_execucao.size());
+    set_data_on_table(TC, AA_troca_contexto);
+    set_data_on_table(TT, tempo_execucao_total);
     
-    printf("\n%d\n", AA_troca_contexto); //quant_troca_contexto
+    printf("\n%d\n", AA_troca_contexto);
 }
-
-
-int main(void){
+void draw_table(){
     int i = 0;
     int j = 0;
-    read();
-    // realizando a execução para cada algoritmo
-    for(algoritmo_atual = 1;algoritmo_atual <= 7; algoritmo_atual++ ){
-        printf("############ ALGORITMO %d ##############\n", algoritmo_atual);
-        inicia();
-    }
     printf("--------------------------------------------------------------------------------------------------\n");
     printf("| TABELA DE RESULTADOS     | FCFS    | RR      | SJF     | SRTF    | PRIOc   | PRIOp   | PRIOd   |\n");
     printf("--------------------------------------------------------------------------------------------------\n");
@@ -464,4 +452,16 @@ int main(void){
         printf("|\n");
     }
     printf("--------------------------------------------------------------------------------------------------\n");
+}
+
+int main(void){
+    int i = 0;
+    int j = 0;
+    read();
+    // realizando a execução para cada algoritmo
+    for(algoritmo_atual = 1;algoritmo_atual <= 7; algoritmo_atual++ ){
+        printf("############ ALGORITMO %d ##############\n", algoritmo_atual);
+        inicia();
+    }
+    draw_table();
 }
