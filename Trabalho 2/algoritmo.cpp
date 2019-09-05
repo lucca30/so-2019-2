@@ -9,6 +9,11 @@ using namespace std;
 #define PRIOp 6
 #define PRIOd 7
 
+#define Tt 0 //Tempo de execução médio
+#define Tw 1 //Tempo de espera médio
+#define TC 2 //Quantas trocas de contexto
+#define TT 3 //Tempo total
+
 #define RR_TQ 2
 
 #define pb push_back
@@ -32,6 +37,8 @@ int AA_ultima_tarefa_em_execucao;
 int AA_instante_inicio_tarefa_em_execucao;
 queue<int> AA_fila;
 set<pair<int, int> > AA_heap; // estrutura de dados que possui os métodos que precisamos de uma heap
+
+float tabela[7][4];
 
 void read (void){
     int n;
@@ -420,7 +427,11 @@ void executa(void){
     }
 }
 
-
+void set_data_on_table(int data_type, float value){//PEDRO
+    //coloca VALUE em tabela[algoritmo_atual][data_type], onde tabela é global
+    //Ex.: tabela[FCFS][Tw] = 5.6;
+    tabela[algoritmo_atual-1][data_type] = value;
+}
 void inicia(void){
 
     // limpeza dos vectors
@@ -461,22 +472,53 @@ void inicia(void){
     }
     printf("\n\nTempo de execução total: %d\n", tempo_execucao_total);
     printf("AA_instante_atual: %d\n", AA_instante_atual);
-
+    
+    float tw_mean = 0;
     for(int i=0;i<AA_tempo_espera.size();i++){
+        tw_mean += AA_tempo_espera[i];
         printf("%d ", AA_tempo_espera[i]);
     }
+    
     printf("\n");
+    float tt_mean = 0;
     for(int i=0;i<AA_tempo_execucao.size();i++){
+        tt_mean += AA_tempo_execucao[i];
         printf("%d ", AA_tempo_execucao[i]);
     }
+    set_data_on_table(Tw, tw_mean/AA_tempo_espera.size());
+    set_data_on_table(Tt, tt_mean/AA_tempo_execucao.size());
+    set_data_on_table(TC, AA_troca_contexto);
+    set_data_on_table(TT, tempo_execucao_total);
+    
     printf("\n%d\n", AA_troca_contexto);
+}
+void draw_table(){
+    int i = 0;
+    int j = 0;
+    printf("--------------------------------------------------------------------------------------------------\n");
+    printf("| TABELA DE RESULTADOS     | FCFS    | RR      | SJF     | SRTF    | PRIOc   | PRIOp   | PRIOd   |\n");
+    printf("--------------------------------------------------------------------------------------------------\n");
+    for(i = 0; i < 4; i++){
+        if(i == Tw) printf("| Tempo de Espera Médio    ");
+        if(i == Tt) printf("| Tempo de Execução Médio  ");
+        if(i == TC) printf("| Qnt Trocas de Contexto   ");
+        if(i == TT) printf("| Tempo de Execução Total  ");
+        for(j = 0; j < 7; j++){
+            printf("| %4.1f    ", tabela[j][i]);
+        }
+        printf("|\n");
+    }
+    printf("--------------------------------------------------------------------------------------------------\n");
 }
 
 int main(void){
+    int i = 0;
+    int j = 0;
     read();
     // realizando a execução para cada algoritmo
     for(algoritmo_atual = 1;algoritmo_atual <= 7; algoritmo_atual++ ){
         printf("############ ALGORITMO %d ##############\n", algoritmo_atual);
         inicia();
     }
+    draw_table();
 }
