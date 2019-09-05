@@ -1,6 +1,12 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+// Nosso objetivo era aproveitar o máximo de código da implementação de um algoritmo em
+// outro, visto que a maioria possui muita semelhança entre si.
+
+// Por falta de tempo não conseguimos agrupar de uma maneira melhor as porções de código
+// comum em funções, mas ainda assim é nítida as semelhanças entre os algoritmos
+
 #define FCFS  1
 #define RR    2
 #define SJF   3
@@ -90,9 +96,6 @@ int get_instante_fim_execucao(void){
     }
 }
 
-//int count_ = 0;
-
-
 
 // função responsável por realizar a simulação de execução e avanço temporal
 void executa(void){
@@ -101,18 +104,10 @@ void executa(void){
     AA_antigo_instante_atual = AA_instante_atual;
     AA_instante_atual  = min(proxima_chegada,fim_execucao);
     int variacao_tempo = AA_instante_atual - AA_antigo_instante_atual;
+    printf("\n\nInstante Atual : %d\n", AA_instante_atual);
 
-    printf("\n\n\nFim execucao: %d\n", fim_execucao);
-    printf("Proxima Chegada: %d\n", proxima_chegada);
-
-//    count_++;  (macete para debugar)
-//    if(count_ == 10){
-//        while(1){count_++;}
-//    }
 
     if(algoritmo_atual == FCFS){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_fila.push(i);
@@ -150,8 +145,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == RR){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_fila.push(i);
@@ -197,8 +190,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == SJF){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_heap.insert(mp(AA_tempo_restante[i],i));
@@ -237,8 +228,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == SRTF){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_heap.insert(mp(AA_tempo_restante[i],i));
@@ -282,8 +271,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == PRIOc){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_heap.insert(mp(-AA_prioridades[i],i));
@@ -322,8 +309,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == PRIOp){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_heap.insert(mp(-AA_prioridades[i],i));
@@ -368,8 +353,6 @@ void executa(void){
     }
 
     if(algoritmo_atual == PRIOd){
-        printf("Instante Atual : %d\n", AA_instante_atual);
-
         for(int i=0;i<AA_instante_chegada.size();i++){
             if(AA_instante_chegada[i] == AA_instante_atual){
                 AA_heap.insert(mp(-AA_prioridades[i],-i));
@@ -432,6 +415,9 @@ void set_data_on_table(int data_type, float value){//PEDRO
     //Ex.: tabela[FCFS][Tw] = 5.6;
     tabela[algoritmo_atual-1][data_type] = value;
 }
+
+
+// início de execução de cada um dos algoritmos
 void inicia(void){
 
     // limpeza dos vectors
@@ -467,35 +453,34 @@ void inicia(void){
     int count = 0;
     while(tempo_execucao_total != AA_instante_atual){
         executa();
-        count++;
-        if(count == 30) break;
     }
     printf("\n\nTempo de execução total: %d\n", tempo_execucao_total);
-    printf("AA_instante_atual: %d\n", AA_instante_atual);
     
+    
+    float tt_mean = 0;
+    printf("Tempo de execução: ");
+    for(int i=0;i<AA_tempo_execucao.size();i++){
+        tt_mean += AA_tempo_execucao[i];
+        printf("%d ", AA_tempo_execucao[i]);
+    }
+    printf("\n");
+    printf("Tempo de espera:   ");
     float tw_mean = 0;
     for(int i=0;i<AA_tempo_espera.size();i++){
         tw_mean += AA_tempo_espera[i];
         printf("%d ", AA_tempo_espera[i]);
-    }
-    
-    printf("\n");
-    float tt_mean = 0;
-    for(int i=0;i<AA_tempo_execucao.size();i++){
-        tt_mean += AA_tempo_execucao[i];
-        printf("%d ", AA_tempo_execucao[i]);
     }
     set_data_on_table(Tw, tw_mean/AA_tempo_espera.size());
     set_data_on_table(Tt, tt_mean/AA_tempo_execucao.size());
     set_data_on_table(TC, AA_troca_contexto);
     set_data_on_table(TT, tempo_execucao_total);
     
-    printf("\n%d\n", AA_troca_contexto);
+    printf("\nTrocas de contexto: %d\n", AA_troca_contexto);
 }
 void draw_table(){
     int i = 0;
     int j = 0;
-    printf("--------------------------------------------------------------------------------------------------\n");
+    printf("\n\n--------------------------------------------------------------------------------------------------\n");
     printf("| TABELA DE RESULTADOS     | FCFS    | RR      | SJF     | SRTF    | PRIOc   | PRIOp   | PRIOd   |\n");
     printf("--------------------------------------------------------------------------------------------------\n");
     for(i = 0; i < 4; i++){
@@ -517,7 +502,9 @@ int main(void){
     read();
     // realizando a execução para cada algoritmo
     for(algoritmo_atual = 1;algoritmo_atual <= 7; algoritmo_atual++ ){
-        printf("############ ALGORITMO %d ##############\n", algoritmo_atual);
+        printf("\n########################################\n");
+        printf("############ ALGORITMO %d ###############\n", algoritmo_atual);
+        printf("########################################\n");
         inicia();
     }
     draw_table();
