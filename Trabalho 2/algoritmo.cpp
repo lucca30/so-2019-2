@@ -7,6 +7,12 @@ using namespace std;
 // Por falta de tempo não conseguimos agrupar de uma maneira melhor as porções de código
 // comum em funções, mas ainda assim é nítida as semelhanças entre os algoritmos
 
+// INSTRUÇÃO PARA COMPILAR:
+// g++ algoritmo.cpp
+
+// INSTRUÇÃO PARA EXECUTAR:
+// ./a.out < input.txt
+
 #define FCFS  1
 #define RR    2
 #define SJF   3
